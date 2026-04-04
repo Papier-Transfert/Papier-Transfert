@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Validation de commande — Papier Transfert</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--pink:#E8A0BF;--pink-light:#F5ABAB;--pink-bg:rgba(245,171,171,0.08);--pink-hover:#D68AAB;
+--green:#3A6B5E;--green-light:#ABF5EE;--green-bg:rgba(171,245,238,0.1);
+--peach:#F5DCAB;--peach-bg:rgba(245,220,171,0.12);
+--text:#2D2D2D;--text-light:#666;--text-muted:#999;--text-hint:#bbb;
+--bg:#FBF8F4;--white:#fff;--border:rgba(0,0,0,0.08);--border-focus:rgba(232,160,191,0.5);
+--radius:12px;--radius-sm:8px;--radius-lg:16px;
+--shadow-sm:0 1px 4px rgba(0,0,0,0.04);--shadow:0 2px 12px rgba(0,0,0,0.05);
+--font-title:'Outfit',sans-serif;--font-body:'Poppins',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.6;min-height:100vh}
+
+/* HEADER CHECKOUT */
+.ck-header{background:var(--white);border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:0;z-index:100}
+.ck-header-inner{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+.ck-logo{font-family:var(--font-title);font-weight:800;font-size:20px;letter-spacing:3px;text-transform:uppercase;color:var(--text)}
+.ck-secure{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);font-weight:500}
+.ck-secure svg{width:14px;height:14px;stroke:var(--green);fill:none;stroke-width:2}
+.ck-steps{display:flex;align-items:center;gap:8px}
+.ck-step{font-family:var(--font-title);font-size:12px;font-weight:500;color:var(--text-hint);display:flex;align-items:center;gap:6px}
+.ck-step.active{color:var(--text)}
+.ck-step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;border:1.5px solid var(--border);color:var(--text-muted)}
+.ck-step.active .ck-step-num{background:var(--pink);border-color:var(--pink);color:var(--white)}
+.ck-step.done .ck-step-num{background:var(--green);border-color:var(--green);color:var(--white)}
+.ck-step-sep{width:20px;height:1px;background:var(--border)}
+
+/* MAIN LAYOUT */
+.ck-main{max-width:1100px;margin:0 auto;padding:32px 24px 80px;display:grid;grid-template-columns:1fr 420px;gap:48px;align-items:start}
+
+/* LEFT: FORMS */
+.ck-forms{display:flex;flex-direction:column;gap:28px}
+.ck-section{background:var(--white);border-radius:var(--radius-lg);padding:28px;border:1px solid var(--border)}
+.ck-section-title{font-family:var(--font-title);font-weight:700;font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.ck-section-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+
+/* FORM FIELDS */
+.ck-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.ck-row.single{grid-template-columns:1fr}
+.ck-field{display:flex;flex-direction:column;gap:5px}
+.ck-label{font-family:var(--font-title);font-weight:500;font-size:13px;color:var(--text)}
+.ck-label .optional{font-weight:400;color:var(--text-muted);font-size:11px;margin-left:4px}
+.ck-input{height:46px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0 14px;font-family:var(--font-body);font-size:14px;color:var(--text);background:var(--white);transition:border-color .2s,box-shadow .2s;outline:none;width:100%}
+.ck-input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(232,160,191,0.15)}
+.ck-input::placeholder{color:var(--text-hint)}
+select.ck-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
+.ck-checkbox-row{display:flex;align-items:center;gap:10px;margin-top:4px;font-size:13px;color:var(--text-light);cursor:pointer}
+.ck-checkbox-row input[type="checkbox"]{width:18px;height:18px;border-radius:4px;accent-color:var(--pink);cursor:pointer}
+
+/* SHIPPING OPTIONS */
+.ck-shipping-options{display:flex;flex-direction:column;gap:8px}
+.ck-ship-opt{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s}
+.ck-ship-opt:hover{border-color:rgba(232,160,191,0.3);background:var(--pink-bg)}
+.ck-ship-opt.selected{border-color:var(--pink);background:var(--pink-bg)}
+.ck-ship-opt input[type="radio"]{width:18px;height:18px;accent-color:var(--pink);cursor:pointer;flex-shrink:0}
+.ck-ship-info{flex:1}
+.ck-ship-name{font-family:var(--font-title);font-weight:600;font-size:14px}
+.ck-ship-delay{font-size:12px;color:var(--text-muted);margin-top:1px}
+.ck-ship-price{font-family:var(--font-title);font-weight:700;font-size:14px;color:var(--green);white-space:nowrap}
+
+/* PAYMENT */
+.ck-pay-options{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.ck-pay-opt{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s}
+.ck-pay-opt:hover{border-color:rgba(232,160,191,0.3)}
+.ck-pay-opt.selected{border-color:var(--pink);background:var(--pink-bg)}
+.ck-pay-opt input[type="radio"]{width:18px;height:18px;accent-color:var(--pink);cursor:pointer;flex-shrink:0}
+.ck-pay-name{font-family:var(--font-title);font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px}
+.ck-pay-icons{display:flex;gap:4px;margin-left:auto}
+.ck-pay-icon{height:22px;border-radius:3px;background:var(--bg);padding:2px 6px;font-size:10px;font-weight:700;display:flex;align-items:center;color:var(--text-light);border:1px solid var(--border)}
+.ck-card-fields{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.ck-card-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* RIGHT: ORDER SUMMARY */
+.ck-summary{position:sticky;top:80px}
+.ck-summary-box{background:var(--white);border-radius:var(--radius-lg);padding:24px;border:1px solid var(--border)}
+.ck-summary-title{font-family:var(--font-title);font-weight:700;font-size:17px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+
+/* CART ITEMS */
+.ck-items{display:flex;flex-direction:column;gap:16px;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.ck-item{display:flex;gap:14px;align-items:center}
+.ck-item-img{width:64px;height:64px;border-radius:var(--radius-sm);background:linear-gradient(145deg,#F0E8F5,#E5D8F0);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-muted);text-align:center;flex-shrink:0;position:relative;overflow:hidden;border:1px solid var(--border)}
+.ck-item-badge{position:absolute;top:-2px;right:-2px;width:20px;height:20px;border-radius:50%;background:var(--text);color:var(--white);font-family:var(--font-title);font-weight:700;font-size:10px;display:flex;align-items:center;justify-content:center}
+.ck-item-info{flex:1;min-width:0}
+.ck-item-name{font-family:var(--font-title);font-weight:600;font-size:13px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ck-item-variant{font-size:11px;color:var(--text-muted);margin-top:2px}
+.ck-item-price{font-family:var(--font-title);font-weight:700;font-size:14px;white-space:nowrap}
+
+/* PROMO CODE */
+.ck-promo{display:flex;gap:8px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.ck-promo input{flex:1;height:42px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0 12px;font-family:var(--font-body);font-size:13px;outline:none;transition:border-color .2s}
+.ck-promo input:focus{border-color:var(--pink)}
+.ck-promo button{height:42px;padding:0 18px;border-radius:var(--radius-sm);background:var(--bg);border:1.5px solid var(--border);font-family:var(--font-title);font-weight:600;font-size:13px;color:var(--text);cursor:pointer;transition:all .2s;white-space:nowrap}
+.ck-promo button:hover{background:var(--white);border-color:var(--pink)}
+
+/* TOTALS */
+.ck-totals{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.ck-total-row{display:flex;justify-content:space-between;font-size:14px}
+.ck-total-row.muted{color:var(--text-light)}
+.ck-total-row.grand{font-family:var(--font-title);font-weight:700;font-size:18px;padding-top:12px;border-top:1px solid var(--border);margin-top:4px}
+.ck-total-row .ck-tva{font-size:11px;font-weight:400;color:var(--text-muted);margin-left:4px}
+
+/* CTA */
+.ck-cta{width:100%;height:54px;border-radius:50px;background:var(--pink);color:var(--white);font-family:var(--font-title);font-weight:700;font-size:16px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;box-shadow:0 4px 20px rgba(232,160,191,0.3)}
+.ck-cta:hover{background:var(--pink-hover);transform:translateY(-1px);box-shadow:0 6px 28px rgba(232,160,191,0.4)}
+
+/* TRUST BADGES */
+.ck-trust{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.ck-trust-item{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-light);line-height:1.4}
+.ck-trust-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+.ck-main{grid-template-columns:1fr;gap:24px}
+.ck-summary{position:static;order:-1}
+.ck-steps{display:none}
+}
+@media(max-width:600px){
+.ck-row{grid-template-columns:1fr}
+.ck-section{padding:20px}
+.ck-card-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- CHECKOUT HEADER -->
+<header class="ck-header">
+<div class="ck-header-inner">
+  <div class="ck-logo">Papier Transfert</div>
+  <div class="ck-steps">
+    <div class="ck-step done"><div class="ck-step-num">&#10003;</div>Panier</div>
+    <div class="ck-step-sep"></div>
+    <div class="ck-step active"><div class="ck-step-num">2</div>Commande</div>
+    <div class="ck-step-sep"></div>
+    <div class="ck-step"><div class="ck-step-num">3</div>Confirmation</div>
+  </div>
+  <div class="ck-secure">
+    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    Paiement s&eacute;curis&eacute;
+  </div>
+</div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="ck-main">
+
+<!-- LEFT: FORMS -->
+<div class="ck-forms">
+
+<!-- CONTACT -->
+<section class="ck-section">
+  <h2 class="ck-section-title">
+    <div class="ck-section-icon" style="background:var(--pink-bg)">&#9993;</div>
+    Contact
+  </h2>
+  <div class="ck-row single">
+    <div class="ck-field">
+      <label class="ck-label">Adresse e-mail</label>
+      <input type="email" class="ck-input" placeholder="votre@email.com">
+    </div>
+  </div>
+</section>
+
+<!-- LIVRAISON -->
+<section class="ck-section">
+  <h2 class="ck-section-title">
+    <div class="ck-section-icon" style="background:var(--green-bg)">&#128666;</div>
+    Adresse de livraison
+  </h2>
+  <div class="ck-row">
+    <div class="ck-field">
+      <label class="ck-label">Pr&eacute;nom</label>
+      <input type="text" class="ck-input" placeholder="Marie">
+    </div>
+    <div class="ck-field">
+      <label class="ck-label">Nom</label>
+      <input type="text" class="ck-input" placeholder="Dupont">
+    </div>
+  </div>
+  <div class="ck-row single">
+    <div class="ck-field">
+      <label class="ck-label">Entreprise <span class="optional">(facultatif)</span></label>
+      <input type="text" class="ck-input" placeholder="Nom de l'entreprise">
+    </div>
+  </div>
+  <div class="ck-row single">
+    <div class="ck-field">
+      <label class="ck-label">Adresse</label>
+      <input type="text" class="ck-input" placeholder="Num&eacute;ro et nom de rue">
+    </div>
+  </div>
+  <div class="ck-row single">
+    <div class="ck-field">
+      <input type="text" class="ck-input" placeholder="Appartement, b&acirc;timent, etc. (facultatif)">
+    </div>
+  </div>
+  <div class="ck-row">
+    <div class="ck-field">
+      <label class="ck-label">Code postal</label>
+      <input type="text" class="ck-input" placeholder="75001">
+    </div>
+    <div class="ck-field">
+      <label class="ck-label">Ville</label>
+      <input type="text" class="ck-input" placeholder="Paris">
+    </div>
+  </div>
+  <div class="ck-row single">
+    <div class="ck-field">
+      <label class="ck-label">Pays / R&eacute;gion</label>
+      <select class="ck-input">
+        <option>France</option>
+        <option>Belgique</option>
+        <option>Suisse</option>
+        <option>Luxembourg</option>
+        <option>DOM-TOM</option>
+      </select>
+    </div>
+  </div>
+  <div class="ck-row single">
+    <div class="ck-field">
+      <label class="ck-label">T&eacute;l&eacute;phone</label>
+      <input type="tel" class="ck-input" placeholder="06 12 34 56 78">
+    </div>
+  </div>
+</section>
+
+<!-- MODE DE LIVRAISON -->
+<section class="ck-section">
+  <h2 class="ck-section-title">
+    <div class="ck-section-icon" style="background:var(--peach-bg)">&#128230;</div>
+    Mode de livraison
+  </h2>
+  <div class="ck-shipping-options">
+    <label class="ck-ship-opt selected" onclick="selectShip(this)">
+      <input type="radio" name="shipping" checked>
+      <div class="ck-ship-info">
+        <div class="ck-ship-name">&#128230; Colissimo Domicile</div>
+        <div class="ck-ship-delay">3&ndash;5 jours ouvr&eacute;s &middot; livr&eacute; chez vous</div>
+      </div>
+      <div class="ck-ship-price">Offert</div>
+    </label>
+    <label class="ck-ship-opt" onclick="selectShip(this)">
+      <input type="radio" name="shipping">
+      <div class="ck-ship-info">
+        <div class="ck-ship-name">&#128205; Point Relais Mondial Relay</div>
+        <div class="ck-ship-delay">4&ndash;6 jours ouvr&eacute;s &middot; retrait en point relais</div>
+      </div>
+      <div class="ck-ship-price">Offert</div>
+    </label>
+  </div>
+</section>
+
+<!-- PAIEMENT -->
+<section class="ck-section">
+  <h2 class="ck-section-title">
+    <div class="ck-section-icon" style="background:rgba(171,187,245,0.12)">&#128179;</div>
+    Paiement
+  </h2>
+  <div class="ck-pay-options">
+    <label class="ck-pay-opt selected" onclick="selectPay(this)">
+      <input type="radio" name="payment" checked>
+      <div class="ck-pay-name">Carte de cr&eacute;dit / d&eacute;bit</div>
+      <div class="ck-pay-icons">
+        <span class="ck-pay-icon">VISA</span>
+        <span class="ck-pay-icon">MC</span>
+        <span class="ck-pay-icon">CB</span>
+      </div>
+    </label>
+    <label class="ck-pay-opt" onclick="selectPay(this)">
+      <input type="radio" name="payment">
+      <div class="ck-pay-name">
+        <span style="color:#7B61FF;font-weight:800;font-style:italic;letter-spacing:-0.5px">Klarna</span>
+        &mdash; Payer en 3x sans frais
+      </div>
+    </label>
+    <label class="ck-pay-opt" onclick="selectPay(this)">
+      <input type="radio" name="payment">
+      <div class="ck-pay-name">
+        <span style="color:#003087;font-weight:800">Pay</span><span style="color:#009CDE;font-weight:800">Pal</span>
+      </div>
+    </label>
+  </div>
+
+  <div class="ck-card-fields" id="card-fields">
+    <div class="ck-field">
+      <label class="ck-label">Num&eacute;ro de carte</label>
+      <input type="text" class="ck-input" placeholder="1234 5678 9012 3456">
+    </div>
+    <div class="ck-card-row">
+      <div class="ck-field">
+        <label class="ck-label">Date d'expiration</label>
+        <input type="text" class="ck-input" placeholder="MM / AA">
+      </div>
+      <div class="ck-field">
+        <label class="ck-label">Code de s&eacute;curit&eacute;</label>
+        <input type="text" class="ck-input" placeholder="CVC">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- N° TVA -->
+<section class="ck-section" style="padding:20px 28px">
+  <label class="ck-checkbox-row">
+    <input type="checkbox">
+    J'ai un num&eacute;ro de TVA intracommunautaire
+  </label>
+</section>
+
+</div>
+
+<!-- RIGHT: ORDER SUMMARY -->
+<aside class="ck-summary">
+<div class="ck-summary-box">
+  <h2 class="ck-summary-title">Votre commande</h2>
+
+  <!-- ITEMS -->
+  <div class="ck-items">
+    <div class="ck-item">
+      <div class="ck-item-img">
+        <span>Presse Auto Magic</span>
+        <div class="ck-item-badge">1</div>
+      </div>
+      <div class="ck-item-info">
+        <div class="ck-item-name">Presse &agrave; Chaud AutoMagic</div>
+        <div class="ck-item-variant">&times; 1</div>
+      </div>
+      <div class="ck-item-price">&euro;350,00</div>
+    </div>
+    <div class="ck-item">
+      <div class="ck-item-img">
+        <span>Flex Premium</span>
+        <div class="ck-item-badge">3</div>
+      </div>
+      <div class="ck-item-info">
+        <div class="ck-item-name">Flex Premium &mdash; Noir</div>
+        <div class="ck-item-variant">30cm &times; 2m &middot; &times;3</div>
+      </div>
+      <div class="ck-item-price">&euro;36,00</div>
+    </div>
+    <div class="ck-item">
+      <div class="ck-item-img">
+        <span>Flex Premium</span>
+        <div class="ck-item-badge">1</div>
+      </div>
+      <div class="ck-item-info">
+        <div class="ck-item-name">Flex Premium &mdash; Noir</div>
+        <div class="ck-item-variant">30cm &times; 10m &middot; &times;1</div>
+      </div>
+      <div class="ck-item-price">&euro;54,00</div>
+    </div>
+  </div>
+
+  <!-- PROMO -->
+  <div class="ck-promo">
+    <input type="text" placeholder="Code promo">
+    <button type="button">Appliquer</button>
+  </div>
+
+  <!-- TOTALS -->
+  <div class="ck-totals">
+    <div class="ck-total-row muted">
+      <span>Sous-total</span>
+      <span>&euro;440,00</span>
+    </div>
+    <div class="ck-total-row muted">
+      <span>Livraison</span>
+      <span style="color:var(--green);font-weight:600">Offerte</span>
+    </div>
+    <div class="ck-total-row grand">
+      <span>Total</span>
+      <span>&euro;440,00<span class="ck-tva">dont &euro;73,33 TVA</span></span>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <button class="ck-cta" type="button">Commander &rarr;</button>
+
+  <!-- TRUST -->
+  <div class="ck-trust">
+    <div class="ck-trust-item">
+      <div class="ck-trust-icon" style="background:var(--green-bg)">&#128274;</div>
+      <span>Paiement <strong>100% s&eacute;curis&eacute;</strong> &mdash; donn&eacute;es chiffr&eacute;es SSL</span>
+    </div>
+    <div class="ck-trust-item">
+      <div class="ck-trust-icon" style="background:var(--pink-bg)">&#128230;</div>
+      <span>Livraison <strong>offerte</strong> en France m&eacute;tropolitaine</span>
+    </div>
+    <div class="ck-trust-item">
+      <div class="ck-trust-icon" style="background:var(--peach-bg)">&#128260;</div>
+      <span>Retour <strong>sous 15 jours</strong> &mdash; satisfait ou rembours&eacute;</span>
+    </div>
+  </div>
+</div>
+</aside>
+
+</main>
+
+<script>
+function selectShip(el){
+  document.querySelectorAll('.ck-ship-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input').checked=true;
+}
+function selectPay(el){
+  document.querySelectorAll('.ck-pay-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input').checked=true;
+}
+</script>
+</body>
+</html>
